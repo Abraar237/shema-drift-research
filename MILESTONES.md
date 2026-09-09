@@ -81,9 +81,18 @@ tokens, not <10%); D3 strongly confirmed; D4 confirmed (audited).
 - [x] Register check: no em/en dashes, no banned words; BH survivors bolded
 - [ ] **DELIVERED TO USER, APPROVAL RECEIVED: ____**
 
-## CP5 · Publish — PENDING
-- [ ] Public repo (.env verified absent), Pages site, film (Matilda, animated, -14 LUFS),
-      3 flat-chart GIFs
+## CP5 · Publish — DONE 2026-09-09, awaiting approval
+- [x] Public repo github.com/Abraar237/shema-drift-research (.env verified absent from
+      index at every commit; repo was private, flipped public for Pages)
+- [x] Pages site https://abraar237.github.io/shema-drift-research/ rebuilt in the
+      script-bias aesthetic (Georgia serif, numbered narrative sections, TOC, stat
+      cards, GIF figure cards); both paper PDFs served from the site
+- [x] Film: 3:25, 1080p60, Matilda narration phrase-anchored via ElevenLabs timestamps,
+      ElevenLabs music bed ducked under narration, two-pass loudnorm (-14.8 LUFS,
+      -1.2 dBTP), continuous motion (bars grow on spoken numbers, counters count);
+      embedded at the top of the site (9.9 MB)
+- [x] 3 concept GIFs (840x840, flat charts, monospace numerals, script-bias card look):
+      the-drop, the-call-that-never-errors, the-28-token-fix; embedded in the site
 - [ ] **LINKS DELIVERED, APPROVAL RECEIVED: ____**
 
 ## CP6 · Self-review — PENDING
