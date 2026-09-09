@@ -11,3 +11,7 @@ node_modules/
 video/renders/
 video/cache/
 *.log
+video/frames/
+video/*.mp4
+Agent Skills/
+reference/

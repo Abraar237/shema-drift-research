@@ -1,0 +1,15 @@
+Every AI agent that calls tools runs on a promise: the schema in its prompt matches the API behind it. Rename a field, tighten an enum, flip a default, and that promise breaks. The question is what happens next. Does the agent fail loudly, or does it keep going and do the wrong thing?
+
+We built SchemaDrift 120 to find out. Thirty tools. One hundred and twenty tasks with machine-checkable answers. Five drift classes, applied one edit at a time: a renamed parameter, a tightened enum, an optional argument that becomes required, an integer that becomes a string, and a changed default. Four model families ran four thousand eight hundred episodes.
+
+Start with the damage. With the old schema in its prompt and the new schema at the executor, Gemini Flash falls from ninety-nine percent task success to fifteen. Gemini Pro, from ninety-eight to eleven. GPT five point six luna, from ninety-three to thirty-eight. And Qwen, from eighty-seven to twenty-two.
+
+Now the scary part: how much of that failure is silent? It depends on the drift. Renames, enum changes, missing required fields, type errors: a strict validator catches all of those. But a changed default violates nothing. The call sails through, and does something different from what the user asked. We watched an eighty dollar payment go out as eighty euros. And if the API is lenient, dropping unknown fields and coercing types, renames and type changes go silent too. One audited call turned a twenty-five hundred dollar invoice into two hundred and fifty thousand dollars. Another turned a two day access grant into four months. All twenty-four calls we hand-audited were genuinely wrong.
+
+So what fixes it? We tested three levers. A retry on the raw error recovers about a third, and exactly nothing on default changes, because there is no error to retry from. Re-sending the full new schema recovers fifty-six to eighty-three percent. And a tiny machine-readable diff of the change, just twenty-eight tokens, recovers ninety-six to ninety-eight percent on Gemini. The diff beats the full schema. Why? Because when an optional field becomes required, its default is deleted from the new schema. The diff remembers the past.
+
+But here is the catch. That same diff does nothing on Qwen. On GPT five point six luna, the point estimate is negative. Both models keep making old-schema calls with the change log sitting right in their prompt. The cheapest fix in the study only works for models that read it.
+
+One more twist. Luna survives drift better than anyone, not through reasoning, but through habit. It fills every optional parameter explicitly, one hundred percent of the time. A model that always writes the currency itself cannot be hurt when the default changes.
+
+The takeaway. Ship a machine-readable diff with every version bump. Monitor the calls that succeed, not just the ones that error. And test whether your model actually reads diffs, before you count on it.
