@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Schema Changed and Nobody Told the Agent · Vizuara Research</title>
+<meta name="description" content="Silent failure and diff-conditioned recovery under tool-schema drift. SchemaDrift-120: 4,800 episodes, 4 model families.">
+<style>
+  :root { --slate:#155e8c; --hot:#b3006b; --shelf:#c0641a; --good:#1c7a55;
+          --ink:#16130d; --ink2:#3a352b; --muted:#6d665a; --faint:#a49c8c;
+          --rule:#e7e2d5; --bg:#ffffff; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); line-height:1.62; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 0 22px; }
+  header { padding: 64px 0 30px; }
+  .eyebrow { font-size:12.5px; letter-spacing:.16em; color:var(--hot); font-weight:700; margin-bottom:14px; }
+  h1 { font-size: clamp(30px, 5vw, 44px); line-height:1.14; letter-spacing:-.01em; margin-bottom:14px; }
+  .sub { font-size:19px; color:var(--ink2); margin-bottom:20px; max-width: 660px; }
+  .byline { font-size:14.5px; color:var(--muted); margin-bottom:22px; }
+  .links a { display:inline-block; font-size:14px; font-weight:700; text-decoration:none; padding:9px 16px; border-radius:8px; margin:0 8px 8px 0; }
+  .links .primary { background:var(--ink); color:#fff; }
+  .links .ghost { border:1.5px solid var(--rule); color:var(--ink); }
+  section { padding: 26px 0; }
+  h2 { font-size:25px; margin: 26px 0 12px; letter-spacing:-.01em; }
+  h2 .k { color: var(--hot); }
+  p { margin-bottom: 14px; color: var(--ink2); font-size: 16.5px; }
+  p b { color: var(--ink); }
+  .figcard { border:1.5px solid var(--rule); border-radius:12px; padding:18px; margin:20px 0; background:#fff; }
+  .figcard img { width:100%; display:block; }
+  .figcap { font-size:13.5px; color:var(--muted); margin-top:10px; line-height:1.5; }
+  table { border-collapse:collapse; width:100%; margin:18px 0; font-size:14.5px; }
+  th { text-align:left; border-bottom:2px solid var(--ink); padding:8px 8px; font-size:13px; }
+  td { border-bottom:1px solid var(--rule); padding:8px 8px; font-variant-numeric: tabular-nums; }
+  td.hi { color:var(--good); font-weight:700; } td.lo { color:var(--hot); font-weight:700; }
+  .bars { margin: 8px 0 4px; }
+  .barrow { display:flex; align-items:center; margin-bottom:9px; }
+  .barlabel { width:150px; flex:none; font-size:13.5px; color:var(--ink2); }
+  .bartrack { flex:1; background:#f4f1ea; border-radius:5px; height:22px; position:relative; }
+  .barfill { height:22px; border-radius:5px; width:0; transition: width 1.1s cubic-bezier(.2,.7,.2,1); }
+  .barval { position:absolute; right:8px; top:1px; font-family:Menlo, monospace; font-size:12.5px; color:var(--ink); }
+  .audit { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0; }
+  .acard { border:1.5px solid var(--rule); border-left:4px solid var(--hot); border-radius:10px; padding:14px 16px; }
+  .acard .what { font-size:15px; color:var(--ink); font-weight:700; margin-bottom:6px; }
+  .acard .how { font-size:13.5px; color:var(--muted); }
+  .delin td:first-child { font-weight:700; color:var(--ink); width:34%; }
+  .videowrap { position:relative; padding-top:56.25%; border-radius:12px; overflow:hidden; border:1.5px solid var(--rule); margin:18px 0; background:#000; }
+  .videowrap video, .videowrap iframe { position:absolute; inset:0; width:100%; height:100%; }
+  .cite { background:#f6f4ee; border-radius:10px; padding:16px 18px; font-family:Menlo, monospace; font-size:12.5px; color:var(--ink2); white-space:pre-wrap; margin:16px 0; }
+  footer { padding: 30px 0 60px; color: var(--muted); font-size:13.5px; border-top:1.5px solid var(--rule); margin-top:40px; }
+  @media (max-width:640px){ .audit{grid-template-columns:1fr;} .barlabel{width:110px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">VIZUARA RESEARCH · SCHEMADRIFT-120 · SEPTEMBER 2026</div>
+  <h1>The schema changed and nobody told the agent</h1>
+  <p class="sub">Tool schemas version: fields get renamed, enums tighten, defaults flip. We measured what breaks when the agent still believes the old schema, how much of it breaks <b>silently</b>, and what a 28-token diff repairs.</p>
+  <div class="byline">Mohammed Abraar · Vizuara Research · abraar@vizz.vizuara.ai</div>
+  <div class="links">
+    <a class="primary" href="paper_iclr_preprint.pdf">Read the paper (PDF)</a>
+    <a class="ghost" href="https://github.com/Abraar237/shema-drift-research">Code + data</a>
+    <a class="ghost" href="#film">Watch the film</a>
+    <a class="ghost" href="paper_iclr_submission.pdf">Anonymous build</a>
+  </div>
+</header>
+
+<section>
+  <div class="figcard"><img src="assets/fig1_teaser.png" alt="Study design and headline numbers"></div>
+</section>
+
+<section id="film">
+  <h2>The three-minute version</h2>
+  <div class="videowrap" id="filmslot">
+    <video controls preload="metadata" poster="assets/fig1_teaser.png" src="assets/film.mp4"></video>
+  </div>
+</section>
+
+<section>
+  <h2>An agent runs on a copy of someone else's interface</h2>
+  <p>A tool-calling agent carries a schema in its prompt: parameter names, types, enums, required flags, documented defaults. The service behind the tool enforces its own copy. In deployment the two copies drift apart, because services version their APIs on their own schedule. Recent benchmarks established that agents degrade when tool interfaces evolve. What they did not answer is the part a practitioner needs most: <b>when a drifted call fails, does anyone find out, and what is the cheapest fix?</b></p>
+  <p>We froze SchemaDrift-120 before applying any drift: 30 tools, 120 tasks whose correct calls a script can check, and five <b>deterministic, single-edit drift classes</b>, so every failure is attributable to a known cause. A local executor enforces the new schema under two tolerance policies (strict and lenient), and every drifted call lands in a three-way ledger: error surfaced, accepted correct, or <b>accepted with wrong semantics</b>.</p>
+</section>
+
+<section>
+  <h2>Drift removes <span class="k">55 to 87 points</span> of task success</h2>
+  <div class="bars" id="dropbars">
+    <div class="barrow"><div class="barlabel">Gemini Flash</div><div class="bartrack"><div class="barfill" style="background:var(--slate)" data-w="83.8"></div><span class="barval">.99 → .15</span></div></div>
+    <div class="barrow"><div class="barlabel">Gemini Pro</div><div class="bartrack"><div class="barfill" style="background:var(--good)" data-w="86.7"></div><span class="barval">.98 → .11</span></div></div>
+    <div class="barrow"><div class="barlabel">GPT-5.6-luna</div><div class="bartrack"><div class="barfill" style="background:var(--hot)" data-w="55.0"></div><span class="barval">.93 → .38</span></div></div>
+    <div class="barrow"><div class="barlabel">Qwen2.5-7B</div><div class="bartrack"><div class="barfill" style="background:var(--shelf)" data-w="64.6"></div><span class="barval">.87 → .22</span></div></div>
+  </div>
+  <p class="figcap">Paired drop in task success, baseline versus silent drift under the strict executor. All four drops p &lt; 5×10⁻⁵. Bars show the size of the drop.</p>
+</section>
+
+<section>
+  <h2>Which drift is silent is a property of the class <span class="k">times the API's tolerance</span></h2>
+  <p>Under a strict validator, renames, enum changes, newly required parameters, and type changes all raise errors. <b>Default changes never do</b>: nothing is structurally wrong with the call, so 38 to 46 percent of them execute with wrong semantics even under strict validation. A lenient gateway, the kind that drops unknown fields and coerces types, converts renames (100 percent) and type changes (67 to 79 percent) into silently wrong calls too.</p>
+  <div class="figcard"><img src="assets/fig3.png" alt="Outcome ledger by drift class and executor profile">
+  <div class="figcap">The outcome ledger for Gemini Flash, 48 drifted calls per class. Blue: error surfaced. Magenta: accepted with wrong semantics. Green: accepted correct.</div></div>
+  <p>We hand-audited 24 of the accepted-wrong calls, stratified over families and classes. All 24 are genuinely wrong. A few of them:</p>
+  <div class="audit">
+    <div class="acard"><div class="what">$80.00 sent as €80</div><div class="how">currency default changed USD → EUR; the call violates nothing a validator checks</div></div>
+    <div class="acard"><div class="what">$2,500 invoiced as $250,000</div><div class="how">integer cents met a decimal-string type change; lenient coercion accepted the raw digits</div></div>
+    <div class="acard"><div class="what">2-day access grant became 4 months</div><div class="how">minutes-to-hours type drift, coerced: 2,880 "hours" instead of 48</div></div>
+    <div class="acard"><div class="what">Toronto job posted as "remote"</div><div class="how">renamed location field silently dropped; the new default filled in</div></div>
+  </div>
+  <p>A retry loop can only fix what errors. On the drift class that never errors, the raw-error retry recovers exactly nothing.</p>
+</section>
+
+<section>
+  <h2>A 28-token diff repairs Gemini almost fully, <span class="k">and beats the full schema</span></h2>
+  <p>We compared three recovery levers under identical drift: a structured machine-readable diff of the change, the full new schema, and one retry on the raw error. On both Gemini models the diff recovers <b>96 to 98 percent</b> of the lost success, at 13.7 percent of the schema's token size, and it outperforms re-injecting the full new schema (82 to 83 percent). The mechanism: when an optional parameter becomes required, its default is deleted from the new schema; <b>the diff carries the old contract</b>, so the agent knows both that the field is now mandatory and which value preserves the old behavior.</p>
+  <div class="figcard"><img src="assets/fig2.png" alt="Success by condition and recovery by lever">
+  <div class="figcap">Left: success by condition. Right: recovery fraction per lever with bootstrap 95 percent intervals.</div></div>
+  <p>And then the other half of the result: <b>the same diff recovers nothing on Qwen2.5-7B (0.06) and nothing on GPT-5.6-luna</b> (point estimate −0.06). Transcripts show both models keep emitting old-schema calls with the change log sitting in the system prompt. The cheapest repair in the study only works for model families that actually read it.</p>
+</section>
+
+<section>
+  <h2>Calling style buys <span class="k">mechanical immunity</span></h2>
+  <p>GPT-5.6-luna loses only 55 points where Gemini Pro loses 87. Not adaptive robustness: luna fills <b>every</b> optional parameter explicitly in its baseline calls (Gemini models: 45 to 46 percent). A model that always writes <span style="font-family:Menlo,monospace;font-size:14px">currency="USD"</span> itself cannot be hurt when the default changes, and cannot omit a newly required parameter. Its survival on those two classes is 96 percent, versus 25 to 31 percent for Gemini; on the three classes defensive filling cannot help, every family is equally destroyed.</p>
+  <div class="figcard"><img src="assets/fig4.png" alt="Calling style versus drift immunity">
+  <div class="figcap">Share of optional parameters filled explicitly (x) against survival on newly-required plus default-change drift (y). One point per family.</div></div>
+</section>
+
+<section>
+  <h2>What was known, what is new</h2>
+  <table class="delin">
+    <tr><th>Prior work</th><th>What it left open</th></tr>
+    <tr><td>MCPEvol-Bench</td><td>agents degrade under LLM-simulated, backward-compatible MCP evolution; no breaking minimal pairs, no silent-failure ledger, no change-information levers</td></tr>
+    <tr><td>ToolBench-X</td><td>specification drift as one of five hazards, prose hints after failure; its own executor silently mutates payloads without measuring it</td></tr>
+    <tr><td>SilentProbe</td><td>silent failure on live production APIs; not attributable to an induced drift class</td></tr>
+    <tr><td>Diff-based code migration</td><td>diffs help LLMs migrate code; never tested on a tool-calling agent against re-injection and retry</td></tr>
+  </table>
+  <p>New here: the deterministic minimal-pair drift taxonomy, the error-surfaced versus accepted-wrong ledger conditional on drift class and executor policy, the controlled diff versus full-schema versus retry comparison, and the calling-style exposure axis.</p>
+</section>
+
+<section>
+  <h2>The practitioner reading</h2>
+  <p><b>Version bumps should ship machine-readable diffs</b>: for families that apply them, drift becomes nearly free to fix at a seventh of the token cost of re-serving schemas. <b>Error-rate monitoring does not cover default changes</b>; the accepted-wrong cell needs its own monitoring. And both the benefit of the diff and the exposure to drift are properties of the model family, so they belong in the evaluation you run before choosing one.</p>
+</section>
+
+<section>
+  <h2>Cite</h2>
+  <div class="cite">@article{abraar2026schemadrift,
+  title={The Schema Changed and Nobody Told the Agent: Silent Failure and
+         Diff-Conditioned Recovery under Tool-Schema Drift},
+  author={Mohammed Abraar},
+  year={2026},
+  note={Preprint. Code and data: github.com/Abraar237/shema-drift-research}
+}</div>
+</section>
+
+<footer>
+  Every number on this page traces to <a href="https://github.com/Abraar237/shema-drift-research/blob/main/results/analysis.json" style="color:var(--slate)">results/analysis.json</a>, produced by one scripted analysis over the raw episode logs. Total marginal compute: under 8 US dollars of API spend plus 1.7 GPU hours. · Vizuara Research, 2026.
+</footer>
+</div>
+<script>
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.barfill').forEach(b => b.style.width = b.dataset.w + '%');
+      io.unobserve(e.target);
+    }
+  }), {threshold: 0.4});
+  document.querySelectorAll('.bars').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
