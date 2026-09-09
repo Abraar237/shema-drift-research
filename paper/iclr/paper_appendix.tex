@@ -1,0 +1,156 @@
+\appendix
+
+\section{Testbed provenance and the one amendment}
+\label{app:freeze}
+
+SchemaDrift-120 was authored and frozen before any drifted episode ran. The frozen artifact is a single JSON file carrying the 30 v1 schemas, all 150 derived v2 schemas (30 tools times 5 classes), all structured diffs, the 120 tasks with both phrasings, the balanced class assignments, and the v1 and v2 ground truths; its SHA-256 hash is recorded in the project log and in the released repository (\texttt{e8bbd71c63b1...d08475}).
+
+One amendment happened between the first freeze and the final one, during a baseline calibration pass that ran condition A only, before any drift condition had executed. Calibration on Gemini 3.6 Flash scored 114/120. The six failures were inspection-level artifacts, not capability failures: three case mismatches in free strings (fixed by making free-string comparison case-insensitive in the canonicalizer), one paraphrase invited by an unquoted reminder text, one prose phrase that leaked into an optional details field, and one ground-truth value inconsistent with its own phrasing. Three phrasings and one value were amended, the testbed re-frozen with a new hash, and all calibration and dry-run episodes discarded. No drifted arm had run at amendment time.
+
+The 30 tools, three per domain: calendar (\texttt{create\_event}, \texttt{create\_reminder}, \texttt{book\_meeting\_room}); payments (\texttt{send\_payment}, \texttt{create\_invoice}, \texttt{refund\_payment}); filesystem (\texttt{copy\_file}, \texttt{compress\_folder}, \texttt{set\_permissions}); CRM (\texttt{create\_contact}, \texttt{log\_interaction}, \texttt{update\_deal}); messaging (\texttt{send\_message}, \texttt{schedule\_message}, \texttt{create\_channel}); web search (\texttt{web\_search}, \texttt{monitor\_keyword}, \texttt{save\_bookmark}); e-commerce (\texttt{place\_order}, \texttt{update\_listing}, \texttt{track\_shipment}); travel (\texttt{book\_flight}, \texttt{reserve\_hotel}, \texttt{hail\_ride}); HR (\texttt{request\_time\_off}, \texttt{post\_job\_opening}, \texttt{submit\_expense}); analytics (\texttt{run\_report}, \texttt{create\_dashboard\_widget}, \texttt{export\_dataset}).
+
+\section{Verbatim prompts, diff format, and executor errors}
+\label{app:prompts}
+
+\textbf{System prompt (every condition).}
+\begin{quote}\small\ttfamily
+You are a tool-calling assistant. Complete the user's request by calling the provided tools with correct arguments. Use parameter defaults by omitting a parameter when the user does not specify it. Amounts, durations, and sizes must be expressed in the units the schema asks for. Call one tool at a time; after all required calls are done, reply with the single word DONE.
+\end{quote}
+
+\textbf{Condition C addendum} (appended to the system prompt; \texttt{\{diff\}} is the JSON below):
+\begin{quote}\small\ttfamily
+NOTE: the API behind tool '\{tool\}' was updated after the schema above was cached. Machine-readable change log for '\{tool\}' (apply it when calling):\\
+\{diff\}
+\end{quote}
+
+\textbf{Diff format}, one record per changed field; the five class instantiations:
+\begin{quote}\small\ttfamily
+[\{"param": "memo", "change": "renamed", "old": "memo", "new": "reference"\}]\\[2pt]
+[\{"param": "speed", "change": "enum\_changed", "old": "instant", "new": "realtime"\}]\\[2pt]
+[\{"param": "funding\_source", "change": "now\_required", "old": \{"default": "default\_balance"\}, "new": "required, no default"\}]\\[2pt]
+[\{"param": "amount\_cents", "change": "type\_changed", "old": \{"type": "integer", "desc": "Amount in cents"\}, "new": \{"type": "string", "desc": "Amount as decimal string in major units"\}\}]\\[2pt]
+[\{"param": "currency", "change": "default\_changed", "old": "USD", "new": "EUR"\}]
+\end{quote}
+
+\textbf{Executor error strings} (strict profile; lenient differs only as described in \S3):
+\begin{quote}\small\ttfamily
+Received unknown parameter: 'location'.\\
+Missing required parameter: 'calendar\_id'.\\
+Invalid value 'private' for parameter 'visibility'. Allowed values: public, restricted, confidential.\\
+Invalid type for parameter 'duration\_min': expected string, got integer.
+\end{quote}
+Documented defaults are rendered into each parameter description as ``(optional; default: X)'' so all providers see identical schema information regardless of native schema-field support.
+
+\section{Per-class results}
+\label{app:tables}
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{llccccc}
+\toprule
+Model & Cond & rename & enum & required & type & default \\
+\midrule
+Gemini 3.6 Flash & B strict & .000 & .146 & .000 & .000 & .625 \\
+ & C +diff & .979 & 1.000 & 1.000 & .938 & .958 \\
+ & D +v2 & 1.000 & .958 & .396 & .896 & .938 \\
+ & E +retry & .000 & .583 & .979 & .042 & .604 \\
+\midrule
+Gemini 3.1 Pro & B strict & .000 & .042 & .000 & .000 & .500 \\
+ & C +diff & .917 & 1.000 & .958 & .958 & .875 \\
+ & D +v2 & 1.000 & .958 & .417 & .958 & .792 \\
+ & E +retry & .000 & .292 & .917 & .000 & .500 \\
+\midrule
+GPT-5.6-luna & B strict & .000 & .000 & 1.000 & .000 & .917 \\
+ & C +diff & .000 & .000 & .958 & .000 & .792 \\
+ & D +v2 & .917 & .833 & .167 & .750 & .792 \\
+ & E +retry & .000 & .000 & 1.000 & .000 & .833 \\
+\midrule
+Qwen2.5-7B & B strict & .000 & .062 & .333 & .000 & .708 \\
+ & C +diff & .000 & .167 & .333 & .083 & .729 \\
+ & D +v2 & .875 & .812 & .167 & .646 & .729 \\
+ & E +retry & .000 & .667 & .771 & .208 & .708 \\
+\bottomrule
+\end{tabular}
+\caption{Task success by drift class ($n{=}48$ pairs per class for Flash and Qwen, 24 for Pro and GPT-5.6-luna). Two readings: GPT-5.6-luna's columns for required and default are its calling-style immunity (\S4.4), and D's weakness on newly-required (.167 to .417 everywhere) is the deleted-default effect that the diff repairs (\S4.3).}
+\label{tab:perclass}
+\end{table}
+
+\begin{table}[h]
+\small
+\centering
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{llccc@{\hskip 14pt}ccc}
+\toprule
+ & & \multicolumn{3}{c}{Strict executor} & \multicolumn{3}{c}{Lenient executor} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+Model & Class & err & wrong & ok & err & wrong & ok \\
+\midrule
+Flash & rename & 1.00 & .00 & .00 & .00 & 1.00 & .00 \\
+ & enum-tighten & .85 & .00 & .15 & .85 & .00 & .15 \\
+ & newly-required & 1.00 & .00 & .00 & .98 & .00 & .02 \\
+ & type-change & 1.00 & .00 & .00 & .00 & .75 & .25 \\
+ & default-change & .00 & .38 & .62 & .00 & .40 & .60 \\
+\midrule
+Pro & rename & 1.00 & .00 & .00 & .00 & 1.00 & .00 \\
+ & enum-tighten & .96 & .00 & .04 & .96 & .00 & .04 \\
+ & newly-required & 1.00 & .00 & .00 & 1.00 & .00 & .00 \\
+ & type-change & 1.00 & .00 & .00 & .00 & .67 & .33 \\
+ & default-change & .00 & .46 & .54 & .00 & .38 & .62 \\
+\midrule
+GPT-5.6-luna & rename & 1.00 & .00 & .00 & .00 & 1.00 & .00 \\
+ & enum-tighten & 1.00 & .00 & .00 & 1.00 & .00 & .00 \\
+ & newly-required & .00 & .00 & 1.00 & .00 & .00 & 1.00 \\
+ & type-change & 1.00 & .00 & .00 & .00 & .67 & .33 \\
+ & default-change & .00 & .00 & 1.00 & .00 & .04 & .96 \\
+\midrule
+Qwen2.5-7B & rename & .98 & .02 & .00 & .00 & 1.00 & .00 \\
+ & enum-tighten & .94 & .00 & .06 & .94 & .00 & .06 \\
+ & newly-required & .58 & .06 & .35 & .58 & .06 & .35 \\
+ & type-change & 1.00 & .00 & .00 & .00 & .79 & .21 \\
+ & default-change & .00 & .27 & .73 & .00 & .27 & .73 \\
+\bottomrule
+\end{tabular}
+\caption{Full outcome ledger under silent drift (condition B): share of drifted calls per class whose outcome was error surfaced (err), accepted with wrong semantics (wrong), or accepted correct (ok). Rows may not sum to 1.00 where the model made no call on some episodes; shares are over drifted calls made.}
+\label{tab:ledgerfull}
+\end{table}
+
+\section{The audited accepted-wrong sample}
+\label{app:audit}
+
+Twenty-four \textsc{accepted-wrong} episodes were sampled stratified over model and drift class and hand-verified against the task phrasing, the call made, and the executed semantics after default filling. All 24 were confirmed. The full audit file, with per-episode verdicts and notes, ships in the release (\texttt{results/audit\_accepted\_wrong\_sample.json}). Selected entries:
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{lllp{6.6cm}}
+\toprule
+Model & Class & Executor & What executed \\
+\midrule
+Gemini Pro & default-change & strict & \$80.00 payment executed with currency EUR \\
+GPT-5.6-luna & type-change & lenient & \$2,500.00 invoice issued as \$250,000 (cents coerced to major units) \\
+Gemini Flash & type-change & lenient & \$375.50 invoice issued as \$37,550 \\
+GPT-5.6-luna & type-change & lenient & 2-day access grant executed as 2,880 hours \\
+Gemini Flash & rename & lenient & job\_location dropped; Toronto job posted with default ``remote'' \\
+Gemini Flash & default-change & lenient & customer not notified of a refund they requested \\
+Qwen2.5-7B & type-change & lenient & \$12.75 expense filed as \$1,275 \\
+Gemini Flash & rename & lenient & gift note dropped from an order; recipient gets no message \\
+Qwen2.5-7B & required & strict & model invented \texttt{currency="EUR"} for a German IBAN; accepted \\
+\bottomrule
+\end{tabular}
+\caption{Nine of the 24 audited episodes. Two of the 24 are low-stakes metadata errors; in two the wrong value was partly model-invented rather than purely mechanical (both labelled in the audit file).}
+\label{tab:audit}
+\end{table}
+
+\section{Batteries and correction detail}
+\label{app:batteries}
+
+\textbf{Noise floor.} Thirty stratified task-drift pairs, condition B strict, five identical calls each. Gemini 3.6 Flash at temperature 0: 13.3 percent of pairs flip task success at least once across the five calls, and the same share flips its ledger outcome. Qwen2.5-7B under greedy decoding: zero flips on both. Headline paired effects in this paper range from 23 to 87 points and sit far outside this floor; individual per-class cells within a few points of each other should not be over-read.
+
+\textbf{Phrasing battery.} Conditions A and B strict re-run on phrasing 2 of all 120 tasks (Flash and Qwen). Paired shift phrasing 2 minus phrasing 1: Flash A $+0.008$ ($p{=}1.0$), Flash B strict $-0.042$ ($p{=}0.27$); Qwen $+0.008$ on both ($p{=}1.0$).
+
+\textbf{Interaction tests.} Drift-class by condition interaction, permutation of class labels over pairs (2,000 permutations, between-class variance statistic): Gemini Flash and Pro, all three levers $p < 5\times10^{-4}$; Qwen D and E $p < 5\times10^{-4}$, C $p{=}0.37$; GPT-5.6-luna D $p < 5\times10^{-4}$, C $p{=}0.13$, E $p{=}0.19$. Where a lever does nothing overall, its per-class profile is flat, which is what the non-significant interactions say.
+
+\textbf{Multiple comparisons.} Benjamini-Hochberg at $q{=}0.05$ over all 112 reported sign-flip tests retains 74 at an effective threshold of $p \le 0.0316$. Every effect named in the abstract survives. The GPT-5.6-luna diff decrement ($-0.033$, $p{=}0.12$) and the Qwen diff increment ($+0.042$, $p{=}0.06$) do not survive and are reported as absences of recovery, not as harms or gains.
+
+\textbf{Token accounting.} Mean artifact size over all 150 tool-class pairs: structured diff 28.1 tokens, full v2 declaration 205.9 tokens (chars/4 estimate), ratio 0.137. Measured mean prompt tokens per call by condition ship in the released analysis output.

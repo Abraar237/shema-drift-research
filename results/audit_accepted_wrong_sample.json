@@ -1,0 +1,951 @@
+{
+ "meta": {
+  "audited_by": "hand-verified per-transcript, 2026-09-09",
+  "n": 24,
+  "confirmed": 24,
+  "summary": "24/24 confirmed accepted-with-wrong-semantics; 2 mild-stakes; 2 wrongness partly model-invented values rather than pure drift mechanics"
+ },
+ "sample": [
+  {
+   "model": "gemini-3.6-flash",
+   "task": "cart01",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Order 2 units of SKU-8842 with express shipping and the gift message 'Happy birthday, Lena!' \u2014 email me the receipt as usual.",
+   "call_args": {
+    "send_receipt": true,
+    "sku": "SKU-8842",
+    "quantity": 2,
+    "gift_message": "Happy birthday, Lena!",
+    "shipping_speed": "express"
+   },
+   "executed_semantics": {
+    "gift_note": "",
+    "quantity": 2,
+    "send_receipt": true,
+    "shipping_speed": "express",
+    "sku": "SKU-8842",
+    "store_id": "main"
+   },
+   "intended_semantics": {
+    "gift_note": "Happy birthday, Lena!",
+    "quantity": 2,
+    "send_receipt": true,
+    "shipping_speed": "express",
+    "sku": "SKU-8842",
+    "store_id": "main"
+   },
+   "divergent_fields": {
+    "gift_note": [
+     "",
+     "Happy birthday, Lena!"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "gift note silently dropped; recipient gets no message"
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "task": "room01",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Book the Cascade room Oct 8 2026 at 15:00 UTC for 45 minutes, boardroom layout, door panel should read 'Vendor pitch'. No catering needed.",
+   "call_args": {
+    "layout": "boardroom",
+    "duration_min": 45,
+    "purpose": "Vendor pitch",
+    "start": "2026-10-08T15:00:00Z",
+    "room": "Cascade",
+    "catering": false
+   },
+   "executed_semantics": {
+    "building": "HQ",
+    "catering": false,
+    "duration_min": 45,
+    "layout": "boardroom",
+    "purpose": "Vendor pitch",
+    "room": "Cascade",
+    "start": "2026-10-08T15:00:00Z"
+   },
+   "intended_semantics": {
+    "building": "HQ",
+    "catering": false,
+    "duration_min": "0.75",
+    "layout": "boardroom",
+    "purpose": "Vendor pitch",
+    "room": "Cascade",
+    "start": "2026-10-08T15:00:00+00:00"
+   },
+   "divergent_fields": {
+    "duration_min": [
+     45,
+     "0.75"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "45 (minutes) coerced to string '45' hours: 45-hour booking vs 45 minutes [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "ship03",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Track 9400111899560001234567 and only alert me on exceptions; poll every 720 minutes, call it 'Camera lens', distance remaining in miles.",
+   "call_args": {
+    "alert_on": "exception",
+    "carrier": "auto_detect",
+    "nickname": "Camera lens",
+    "poll_interval_min": 720,
+    "tracking_number": "9400111899560001234567",
+    "units": "miles"
+   },
+   "executed_semantics": {
+    "alert_on": "exception",
+    "carrier": "auto_detect",
+    "nickname": "Camera lens",
+    "poll_interval_min": 720,
+    "tracking_number": "9400111899560001234567",
+    "units": "miles"
+   },
+   "intended_semantics": {
+    "alert_on": "exception",
+    "carrier": "auto_detect",
+    "nickname": "Camera lens",
+    "poll_interval_min": "12",
+    "tracking_number": "9400111899560001234567",
+    "units": "miles"
+   },
+   "divergent_fields": {
+    "poll_interval_min": [
+     720,
+     "12"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "720 coerced to '720' hours vs intended 12h: 60x polling slowdown [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "task": "refund03",
+   "class": "default_change",
+   "cond": "B_lenient",
+   "phrasing": "Refund the full $250.00 on pay_55710 as fraud; internal note 'Chargeback pre-empt'. Customer should still get the standard refund email.",
+   "call_args": {
+    "note": "Chargeback pre-empt",
+    "reason": "fraud",
+    "payment_id": "pay_55710",
+    "amount_cents": 25000
+   },
+   "executed_semantics": {
+    "amount_cents": 25000,
+    "ledger": "main",
+    "note": "Chargeback pre-empt",
+    "notify": false,
+    "payment_id": "pay_55710",
+    "reason": "fraud"
+   },
+   "intended_semantics": {
+    "amount_cents": 25000,
+    "ledger": "main",
+    "note": "Chargeback pre-empt",
+    "notify": true,
+    "payment_id": "pay_55710",
+    "reason": "fraud"
+   },
+   "divergent_fields": {
+    "notify": [
+     false,
+     true
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "new default notify=false: customer never receives refund email despite explicit request"
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "task": "inv03",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Create an invoice to office@wayne.test for $375.50, net-30, with 'Hardware refresh' in the notes.",
+   "call_args": {
+    "amount_cents": 37550,
+    "customer": "office@wayne.test",
+    "terms": "net30",
+    "notes": "Hardware refresh"
+   },
+   "executed_semantics": {
+    "amount_cents": 37550,
+    "currency": "USD",
+    "customer": "office@wayne.test",
+    "notes": "Hardware refresh",
+    "template_id": "standard",
+    "terms": "net30"
+   },
+   "intended_semantics": {
+    "amount_cents": "375.50",
+    "currency": "USD",
+    "customer": "office@wayne.test",
+    "notes": "Hardware refresh",
+    "template_id": "standard",
+    "terms": "net30"
+   },
+   "divergent_fields": {
+    "amount_cents": [
+     37550,
+     "375.50"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "37550 cents coerced to '37550' major units: $37,550 invoice vs $375.50 (100x overbilling) [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "list01",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Update listing lst_2231: condition refurbished, shipping weight 2500 grams, headline 'Refurbished espresso machine' \u2014 and keep it live for shoppers.",
+   "call_args": {
+    "condition": "refurbished",
+    "headline": "Refurbished espresso machine",
+    "listing_id": "lst_2231",
+    "weight_grams": 2500,
+    "visible": true
+   },
+   "executed_semantics": {
+    "condition": "refurbished",
+    "listing_id": "lst_2231",
+    "listing_title": "",
+    "marketplace": "us",
+    "visible": true,
+    "weight_grams": 2500
+   },
+   "intended_semantics": {
+    "condition": "refurbished",
+    "listing_id": "lst_2231",
+    "listing_title": "Refurbished espresso machine",
+    "marketplace": "us",
+    "visible": true,
+    "weight_grams": 2500
+   },
+   "divergent_fields": {
+    "listing_title": [
+     "",
+     "Refurbished espresso machine"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "listing title dropped; listing created with empty title"
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "task": "job04",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Post a contract ML Research Intern opening in Research, located in Toronto, band up to $48,000.00, on the public careers page \u2014 then set a keyword monitor on 'ML Research Intern'.",
+   "call_args": {
+    "title": "ML Research Intern",
+    "employment": "contract",
+    "location": "Toronto",
+    "department": "Research",
+    "salary_cents": 4800000
+   },
+   "executed_semantics": {
+    "department": "Research",
+    "employment": "contract",
+    "internal_only": false,
+    "job_location": "remote",
+    "recruiter_id": "auto_assign",
+    "salary_cents": 4800000,
+    "title": "ML Research Intern"
+   },
+   "intended_semantics": {
+    "department": "Research",
+    "employment": "contract",
+    "internal_only": false,
+    "job_location": "Toronto",
+    "recruiter_id": "auto_assign",
+    "salary_cents": 4800000,
+    "title": "ML Research Intern"
+   },
+   "divergent_fields": {
+    "job_location": [
+     "remote",
+     "Toronto"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "job_location dropped -> default 'remote': Toronto job posted as remote"
+  },
+  {
+   "model": "openai/gpt-5.6-luna",
+   "task": "perm03",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Let mchen read /hr/reviews (that path only, no children) for two days \u2014 2880 minutes \u2014 justification 'Calibration committee'.",
+   "call_args": {
+    "access": "read",
+    "expiry_min": 2880,
+    "justification": "Calibration committee",
+    "path": "/hr/reviews",
+    "principal": "mchen",
+    "realm": "corp",
+    "recursive": false
+   },
+   "executed_semantics": {
+    "access": "read",
+    "expiry_min": 2880,
+    "justification": "Calibration committee",
+    "path": "/hr/reviews",
+    "principal": "mchen",
+    "realm": "corp",
+    "recursive": false
+   },
+   "intended_semantics": {
+    "access": "read",
+    "expiry_min": "48",
+    "justification": "Calibration committee",
+    "path": "/hr/reviews",
+    "principal": "mchen",
+    "realm": "corp",
+    "recursive": false
+   },
+   "divergent_fields": {
+    "expiry_min": [
+     2880,
+     "48"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "2880 coerced to '2880' hours vs 48h: 4-month access grant vs 2 days (security-relevant) [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "exp03",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Expense $64.20 at Office Depot (Sep 2 2026) as supplies with the memo 'Whiteboard markers'.",
+   "call_args": {
+    "amount_cents": 6420,
+    "category": "supplies",
+    "cost_center": "general",
+    "currency": "USD",
+    "incurred_on": "2026-09-02",
+    "memo": "Whiteboard markers",
+    "merchant": "Office Depot"
+   },
+   "executed_semantics": {
+    "amount_cents": 6420,
+    "category": "supplies",
+    "cost_center": "general",
+    "currency": "USD",
+    "incurred_on": "2026-09-02",
+    "merchant": "Office Depot",
+    "note": ""
+   },
+   "intended_semantics": {
+    "amount_cents": 6420,
+    "category": "supplies",
+    "cost_center": "general",
+    "currency": "USD",
+    "incurred_on": "2026-09-02",
+    "merchant": "Office Depot",
+    "note": "Whiteboard markers"
+   },
+   "divergent_fields": {
+    "note": [
+     "",
+     "Whiteboard markers"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "expense note dropped"
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "task": "fly03",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Book an economy flight to AUS on Dec 3 2026, window seat, layovers no more than 180 minutes; don't pay extra for refundable.",
+   "call_args": {
+    "seat_pref": "window",
+    "destination": "AUS",
+    "cabin": "economy",
+    "depart": "2026-12-03",
+    "max_layover_min": 180,
+    "refundable": false
+   },
+   "executed_semantics": {
+    "cabin": "economy",
+    "depart": "2026-12-03",
+    "destination": "AUS",
+    "max_layover_min": 180,
+    "refundable": false,
+    "seat_preference": "",
+    "traveler_id": "primary_profile"
+   },
+   "intended_semantics": {
+    "cabin": "economy",
+    "depart": "2026-12-03",
+    "destination": "AUS",
+    "max_layover_min": 180,
+    "refundable": false,
+    "seat_preference": "window",
+    "traveler_id": "primary_profile"
+   },
+   "divergent_fields": {
+    "seat_preference": [
+     "",
+     "window"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "seat preference dropped"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "log02",
+   "class": "default_change",
+   "cond": "B_lenient",
+   "phrasing": "Log that I emailed ct_1188 the pricing deck (summary 'Sent pricing deck'). Don't create a follow-up.",
+   "call_args": {
+    "contact_id": "ct_1188",
+    "summary": "Sent pricing deck",
+    "kind": "email"
+   },
+   "executed_semantics": {
+    "contact_id": "ct_1188",
+    "details": "",
+    "duration_min": 0,
+    "follow_up": true,
+    "kind": "email",
+    "pipeline": "sales",
+    "summary": "Sent pricing deck"
+   },
+   "intended_semantics": {
+    "contact_id": "ct_1188",
+    "details": "",
+    "duration_min": 0,
+    "follow_up": false,
+    "kind": "email",
+    "pipeline": "sales",
+    "summary": "Sent pricing deck"
+   },
+   "divergent_fields": {
+    "follow_up": [
+     true,
+     false
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "new default follow_up=true: spurious follow-up task created against explicit instruction"
+  },
+  {
+   "model": "openai/gpt-5.6-luna",
+   "task": "inv01",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Bill Globex (ap@globex.test) $2,500.00 on net-30 terms; the invoice should carry the note 'Milestone 2'.",
+   "call_args": {
+    "amount_cents": 250000,
+    "currency": "USD",
+    "customer": "ap@globex.test",
+    "notes": "Milestone 2",
+    "template_id": "standard",
+    "terms": "net30"
+   },
+   "executed_semantics": {
+    "amount_cents": 250000,
+    "currency": "USD",
+    "customer": "ap@globex.test",
+    "notes": "Milestone 2",
+    "template_id": "standard",
+    "terms": "net30"
+   },
+   "intended_semantics": {
+    "amount_cents": "2500.00",
+    "currency": "USD",
+    "customer": "ap@globex.test",
+    "notes": "Milestone 2",
+    "template_id": "standard",
+    "terms": "net30"
+   },
+   "divergent_fields": {
+    "amount_cents": [
+     250000,
+     "2500.00"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "250000 cents coerced: $250,000 invoice vs $2,500 (100x) [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "task": "deal02",
+   "class": "default_change",
+   "cond": "B_strict",
+   "phrasing": "Set deal dl_8813 to proposal stage at $12,000.00.",
+   "call_args": {
+    "stage": "proposal",
+    "deal_id": "dl_8813",
+    "value_cents": 1200000
+   },
+   "executed_semantics": {
+    "close_date": "",
+    "currency": "USD",
+    "deal_id": "dl_8813",
+    "loss_reason": "unspecified",
+    "stage": "proposal",
+    "value_cents": 1200000
+   },
+   "intended_semantics": {
+    "close_date": "",
+    "currency": "USD",
+    "deal_id": "dl_8813",
+    "loss_reason": "",
+    "stage": "proposal",
+    "value_cents": 1200000
+   },
+   "divergent_fields": {
+    "loss_reason": [
+     "unspecified",
+     ""
+    ]
+   },
+   "audit_verdict": "CONFIRMED-MILD",
+   "audit_note": "loss_reason 'unspecified' recorded on an open deal; wrong but low-stakes"
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "task": "refund02",
+   "class": "default_change",
+   "cond": "B_lenient",
+   "phrasing": "pay_10442 was charged twice \u2014 refund the duplicate $12.00 and let the customer know by email as usual.",
+   "call_args": {
+    "payment_id": "pay_10442",
+    "reason": "duplicate",
+    "amount_cents": 1200
+   },
+   "executed_semantics": {
+    "amount_cents": 1200,
+    "ledger": "main",
+    "note": "",
+    "notify": false,
+    "payment_id": "pay_10442",
+    "reason": "duplicate"
+   },
+   "intended_semantics": {
+    "amount_cents": 1200,
+    "ledger": "main",
+    "note": "",
+    "notify": true,
+    "payment_id": "pay_10442",
+    "reason": "duplicate"
+   },
+   "divergent_fields": {
+    "notify": [
+     false,
+     true
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "customer not notified of refund"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "bmk03",
+   "class": "default_change",
+   "cond": "B_strict",
+   "phrasing": "Bookmark https://smittenkitchen.com/ragu as 'Weeknight ragu', keep it private, 3 stars, tagged 'recipes', synced to all my devices.",
+   "call_args": {
+    "folder": "",
+    "privacy": "private",
+    "rating": 3,
+    "sync_devices": true,
+    "tags": "recipes",
+    "title": "Weeknight ragu",
+    "url": "https://smittenkitchen.com/ragu"
+   },
+   "executed_semantics": {
+    "folder": "",
+    "privacy": "private",
+    "rating": 3,
+    "sync_devices": true,
+    "tags": "recipes",
+    "title": "Weeknight ragu",
+    "url": "https://smittenkitchen.com/ragu"
+   },
+   "intended_semantics": {
+    "folder": "unsorted",
+    "privacy": "private",
+    "rating": 3,
+    "sync_devices": true,
+    "tags": "recipes",
+    "title": "Weeknight ragu",
+    "url": "https://smittenkitchen.com/ragu"
+   },
+   "divergent_fields": {
+    "folder": [
+     "",
+     "unsorted"
+    ]
+   },
+   "audit_verdict": "CONFIRMED-MILD",
+   "audit_note": "bookmark lands in root instead of 'unsorted' folder"
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "task": "pay03",
+   "class": "default_change",
+   "cond": "B_strict",
+   "phrasing": "Send $80.00 to @studio_nine instantly.",
+   "call_args": {
+    "recipient": "@studio_nine",
+    "amount_cents": 8000,
+    "speed": "instant"
+   },
+   "executed_semantics": {
+    "amount_cents": 8000,
+    "currency": "EUR",
+    "funding_source": "default_balance",
+    "memo": "",
+    "recipient": "@studio_nine",
+    "speed": "instant"
+   },
+   "intended_semantics": {
+    "amount_cents": 8000,
+    "currency": "USD",
+    "funding_source": "default_balance",
+    "memo": "",
+    "recipient": "@studio_nine",
+    "speed": "instant"
+   },
+   "divergent_fields": {
+    "currency": [
+     "EUR",
+     "USD"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "payment of 80.00 executed in EUR, user asked for $80.00 (currency default USD->EUR)"
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "task": "ds03",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Export billing_ledger to s3://viz-archive/billing with zstd compression, 4096 MB chunks, tag 'finance', header row included.",
+   "call_args": {
+    "tag": "finance",
+    "chunk_mb": 4096,
+    "destination": "s3://viz-archive/billing",
+    "dataset": "billing_ledger",
+    "compression": "zstd",
+    "include_headers": true
+   },
+   "executed_semantics": {
+    "chunk_mb": 4096,
+    "compression": "zstd",
+    "dataset": "billing_ledger",
+    "destination": "s3://viz-archive/billing",
+    "include_headers": true,
+    "region": "us-east-1",
+    "tag": "finance"
+   },
+   "intended_semantics": {
+    "chunk_mb": "4",
+    "compression": "zstd",
+    "dataset": "billing_ledger",
+    "destination": "s3://viz-archive/billing",
+    "include_headers": true,
+    "region": "us-east-1",
+    "tag": "finance"
+   },
+   "divergent_fields": {
+    "chunk_mb": [
+     4096,
+     "4"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "4096 coerced to '4096' GB chunks vs 4 GB [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "exp02",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Expense the $12.75 lunch at Corner Deli from Sep 5 2026 under meals.",
+   "call_args": {
+    "amount_cents": 1275,
+    "category": "meals",
+    "incurred_on": "2026-09-05",
+    "merchant": "Corner Deli"
+   },
+   "executed_semantics": {
+    "amount_cents": 1275,
+    "category": "meals",
+    "cost_center": "general",
+    "currency": "USD",
+    "incurred_on": "2026-09-05",
+    "memo": "",
+    "merchant": "Corner Deli"
+   },
+   "intended_semantics": {
+    "amount_cents": "12.75",
+    "category": "meals",
+    "cost_center": "general",
+    "currency": "USD",
+    "incurred_on": "2026-09-05",
+    "memo": "",
+    "merchant": "Corner Deli"
+   },
+   "divergent_fields": {
+    "amount_cents": [
+     1275,
+     "12.75"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "$12.75 expense filed as $1,275 (100x) [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "openai/gpt-5.6-luna",
+   "task": "list04",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Update listing lst_8814 \u2014 refurbished condition, 500 gram weight, headline 'Renewed tablet, 64 GB', still visible to shoppers \u2014 then start a keyword monitor on 'renewed tablet'.",
+   "call_args": {
+    "condition": "refurbished",
+    "headline": "Renewed tablet, 64 GB",
+    "listing_id": "lst_8814",
+    "marketplace": "us",
+    "visible": true,
+    "weight_grams": 500
+   },
+   "executed_semantics": {
+    "condition": "refurbished",
+    "listing_id": "lst_8814",
+    "listing_title": "",
+    "marketplace": "us",
+    "visible": true,
+    "weight_grams": 500
+   },
+   "intended_semantics": {
+    "condition": "refurbished",
+    "listing_id": "lst_8814",
+    "listing_title": "Renewed tablet, 64 GB",
+    "marketplace": "us",
+    "visible": true,
+    "weight_grams": 500
+   },
+   "divergent_fields": {
+    "listing_title": [
+     "",
+     "Renewed tablet, 64 GB"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "listing title dropped"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "web04",
+   "class": "required",
+   "cond": "B_lenient",
+   "phrasing": "Search who.int for 'WHO air quality guidelines 2026' (3 results, moderate safe-search, no image results) and bookmark the top hit as 'WHO air quality guidelines'.",
+   "call_args": {
+    "query": "WHO air quality guidelines 2026",
+    "max_results": 3,
+    "safe_search": "moderate",
+    "include_images": false,
+    "region": "us"
+   },
+   "executed_semantics": {
+    "include_images": false,
+    "max_results": 3,
+    "query": "WHO air quality guidelines 2026",
+    "region": "us",
+    "safe_search": "moderate",
+    "site_filter": ""
+   },
+   "intended_semantics": {
+    "include_images": false,
+    "max_results": 3,
+    "query": "WHO air quality guidelines 2026",
+    "region": "us",
+    "safe_search": "moderate",
+    "site_filter": "who.int"
+   },
+   "divergent_fields": {
+    "site_filter": [
+     "",
+     "who.int"
+    ]
+   },
+   "audit_verdict": "CONFIRMED-MODEL-VALUE",
+   "audit_note": "model defensively passed site_filter='' (empty) -> unfiltered search vs who.int restriction; wrongness stems from model-invented value under drift"
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "task": "zip01",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Compress /photos/2025 into photos-2025.zip as a zip, manifest label 'Family photos'. No encryption, plain archive.",
+   "call_args": {
+    "archive_name": "photos-2025.zip",
+    "encrypt": false,
+    "folder": "/photos/2025",
+    "label": "Family photos",
+    "format": "zip"
+   },
+   "executed_semantics": {
+    "archive_name": "photos-2025.zip",
+    "dest_dir": "/archives",
+    "encrypt": false,
+    "folder": "/photos/2025",
+    "format": "zip",
+    "manifest_tag": "",
+    "split_mb": 0
+   },
+   "intended_semantics": {
+    "archive_name": "photos-2025.zip",
+    "dest_dir": "/archives",
+    "encrypt": false,
+    "folder": "/photos/2025",
+    "format": "zip",
+    "manifest_tag": "Family photos",
+    "split_mb": 0
+   },
+   "divergent_fields": {
+    "manifest_tag": [
+     "",
+     "Family photos"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "archive manifest label dropped"
+  },
+  {
+   "model": "openai/gpt-5.6-luna",
+   "task": "widg03",
+   "class": "rename",
+   "cond": "B_lenient",
+   "phrasing": "Add a line chart for signups to dash_growth, 120-minute refresh, subtitle 'Daily signups', keeping the legend shown.",
+   "call_args": {
+    "chart": "line",
+    "dashboard_id": "dash_growth",
+    "metric": "signups",
+    "project": "default",
+    "refresh_min": 120,
+    "show_legend": true,
+    "subtitle": "Daily signups"
+   },
+   "executed_semantics": {
+    "caption": "",
+    "chart": "line",
+    "dashboard_id": "dash_growth",
+    "metric": "signups",
+    "project": "default",
+    "refresh_min": 120,
+    "show_legend": true
+   },
+   "intended_semantics": {
+    "caption": "Daily signups",
+    "chart": "line",
+    "dashboard_id": "dash_growth",
+    "metric": "signups",
+    "project": "default",
+    "refresh_min": 120,
+    "show_legend": true
+   },
+   "divergent_fields": {
+    "caption": [
+     "",
+     "Daily signups"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "widget caption dropped"
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "task": "cal01",
+   "class": "type_change",
+   "cond": "B_lenient",
+   "phrasing": "Put a design review on my calendar: Oct 6 2026, 14:00 UTC, an hour and a half, in Room 4A. Keep it private, and make sure the attendees get their invites.",
+   "call_args": {
+    "visibility": "private",
+    "notify_attendees": true,
+    "duration_min": 90,
+    "location": "Room 4A",
+    "start": "2026-10-06T14:00:00Z",
+    "title": "Design review"
+   },
+   "executed_semantics": {
+    "calendar_id": "primary",
+    "duration_min": 90,
+    "location": "Room 4A",
+    "notify_attendees": true,
+    "start": "2026-10-06T14:00:00Z",
+    "title": "Design review",
+    "visibility": "private"
+   },
+   "intended_semantics": {
+    "calendar_id": "primary",
+    "duration_min": "1.5",
+    "location": "Room 4A",
+    "notify_attendees": true,
+    "start": "2026-10-06T14:00:00+00:00",
+    "title": "Design review",
+    "visibility": "private"
+   },
+   "divergent_fields": {
+    "duration_min": [
+     90,
+     "1.5"
+    ]
+   },
+   "audit_verdict": "CONFIRMED",
+   "audit_note": "90 coerced to '90' hours vs 1.5h: 90-hour calendar event [displayed executed value is the raw int; executor coerced it to the same digits as a string]"
+  },
+  {
+   "model": "modal-qwen2.5-7b",
+   "task": "pay02",
+   "class": "required",
+   "cond": "B_strict",
+   "phrasing": "Pay my landlord's account DE89370400440532013000 $450.00 for October rent (memo 'October rent'), standard speed is fine.",
+   "call_args": {
+    "amount_cents": 45000,
+    "currency": "EUR",
+    "funding_source": "default_balance",
+    "memo": "October rent",
+    "recipient": "DE89370400440532013000",
+    "speed": "standard"
+   },
+   "executed_semantics": {
+    "amount_cents": 45000,
+    "currency": "EUR",
+    "funding_source": "default_balance",
+    "memo": "October rent",
+    "recipient": "DE89370400440532013000",
+    "speed": "standard"
+   },
+   "intended_semantics": {
+    "amount_cents": 45000,
+    "currency": "USD",
+    "funding_source": "default_balance",
+    "memo": "October rent",
+    "recipient": "DE89370400440532013000",
+    "speed": "standard"
+   },
+   "divergent_fields": {
+    "currency": [
+     "EUR",
+     "USD"
+    ]
+   },
+   "audit_verdict": "CONFIRMED-MODEL-VALUE",
+   "audit_note": "model passed currency='EUR' unprompted (German IBAN inference); accepted with wrong currency"
+  }
+ ]
+}

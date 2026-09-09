@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Helvetica, Arial, sans-serif; background: #ffffff; width: 1400px; }
+  .wrap { width: 1400px; padding: 26px 30px 22px; }
+  .eyebrow { font-size: 15px; letter-spacing: .14em; color: #6d665a; font-weight: 700; margin-bottom: 6px; }
+  .head { font-size: 26px; color: #16130d; font-weight: 700; margin-bottom: 18px; }
+  .head .hot { color: #b3006b; }
+  .cols { display: flex; gap: 22px; align-items: stretch; }
+  .col { border: 1.5px solid #e7e2d5; border-radius: 10px; padding: 16px 18px; background: #fff; }
+  .c1 { width: 320px; } .c2 { width: 560px; } .c3 { flex: 1; }
+  .coltitle { font-size: 13px; letter-spacing: .1em; color: #6d665a; font-weight: 700; margin-bottom: 10px; }
+  .bubble { background: #f6f4ee; border-radius: 8px; padding: 12px 14px; font-size: 14.5px; color: #3a352b; line-height: 1.45; }
+  .call { font-family: "SF Mono", Menlo, monospace; font-size: 12.5px; color: #155e8c; background: #f0f5f9; border-radius: 8px; padding: 10px 12px; margin-top: 12px; line-height: 1.5; }
+  .call b { color: #16130d; }
+  .agentnote { font-size: 12.5px; color: #6d665a; margin-top: 10px; font-style: italic; }
+  .driftrow { display: flex; align-items: center; font-family: "SF Mono", Menlo, monospace; font-size: 12.3px; margin-bottom: 8px; }
+  .tag { font-family: Helvetica; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; width: 128px; flex: none; color: #fff; border-radius: 4px; padding: 3px 0; text-align: center; margin-right: 10px; }
+  .t1 { background: #155e8c; } .t2 { background: #155e8c; } .t3 { background: #155e8c; }
+  .t4 { background: #155e8c; } .t5 { background: #b3006b; }
+  .old { color: #6d665a; text-decoration: line-through; }
+  .arr { color: #a49c8c; padding: 0 6px; }
+  .new { color: #16130d; font-weight: 600; }
+  .ledger { margin-top: 14px; border-top: 1.5px dashed #e7e2d5; padding-top: 12px; font-size: 13px; color: #3a352b; line-height: 1.55; }
+  .ledger .silent { color: #b3006b; font-weight: 700; }
+  .fam { display: flex; align-items: center; margin-bottom: 13px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 9px; flex: none; }
+  .famname { font-size: 13.5px; color: #16130d; width: 128px; flex: none; }
+  .nums { font-family: "SF Mono", Menlo, monospace; font-size: 14.5px; color: #3a352b; }
+  .nums .drop { color: #b3006b; font-weight: 700; }
+  .nums .rec { font-weight: 700; }
+  .nums .g { color: #1c7a55; }
+  .nums .r { color: #b3006b; }
+  .arrow2 { color: #a49c8c; padding: 0 5px; }
+  .legendline { font-size: 11.5px; color: #6d665a; margin: 2px 0 14px 21px; }
+  .foot { margin-top: 16px; font-size: 14px; color: #3a352b; border-top: 1.5px solid #e7e2d5; padding-top: 12px; }
+  .foot b { color: #b3006b; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">SCHEMADRIFT-120 · 30 TOOLS · 120 TASKS · 5 DRIFT CLASSES · 4 MODEL FAMILIES · 4,800 EPISODES</div>
+  <div class="head">The tool's schema changes. Nobody tells the agent. <span class="hot">What breaks, and what fixes it?</span></div>
+  <div class="cols">
+    <div class="col c1">
+      <div class="coltitle">ONE FROZEN TASK</div>
+      <div class="bubble">&ldquo;Send $80.00 to @studio_nine instantly.&rdquo;</div>
+      <div class="call">send_payment(<br>&nbsp;&nbsp;recipient=<b>"@studio_nine"</b>,<br>&nbsp;&nbsp;amount_cents=<b>8000</b>,<br>&nbsp;&nbsp;speed=<b>"instant"</b>)</div>
+      <div class="agentnote">the agent still believes schema v1; the executor enforces v2</div>
+    </div>
+    <div class="col c2">
+      <div class="coltitle">FIVE DETERMINISTIC DRIFT CLASSES (minimal pairs)</div>
+      <div class="driftrow"><span class="tag t1">RENAME</span><span class="old">memo</span><span class="arr">&rarr;</span><span class="new">reference</span></div>
+      <div class="driftrow"><span class="tag t2">ENUM-TIGHTEN</span><span class="old">"instant"</span><span class="arr">&rarr;</span><span class="new">"realtime"</span></div>
+      <div class="driftrow"><span class="tag t3">NEWLY-REQUIRED</span><span class="new">funding_source</span><span style="font-family:Helvetica;font-size:11.5px;color:#6d665a">&nbsp;&nbsp;loses its default</span></div>
+      <div class="driftrow"><span class="tag t4">TYPE-CHANGE</span><span class="old">8000</span><span class="arr">&rarr;</span><span class="new">"80.00"</span></div>
+      <div class="driftrow"><span class="tag t5">DEFAULT-CHANGE</span><span class="old">currency: USD</span><span class="arr">&rarr;</span><span class="new">EUR</span></div>
+      <div class="ledger">Every drifted call lands in a three-way ledger: <span style="color:#155e8c;font-weight:700">error surfaced</span> · <span class="silent">accepted with wrong semantics</span> · accepted correct.<br>Default-change never errors: the $80 payment silently goes out <span class="silent">as &euro;80</span>.</div>
+    </div>
+    <div class="col c3">
+      <div class="coltitle">TASK SUCCESS: baseline &rarr; drift &rarr; + structured diff</div>
+      <div class="fam"><span class="dot" style="background:#155e8c"></span><span class="famname">Gemini Flash</span><span class="nums">.99<span class="arrow2">&rarr;</span><span class="drop">.15</span><span class="arrow2">&rarr;</span><span class="rec g">.98</span></span></div>
+      <div class="fam"><span class="dot" style="background:#1c7a55"></span><span class="famname">Gemini Pro</span><span class="nums">.98<span class="arrow2">&rarr;</span><span class="drop">.11</span><span class="arrow2">&rarr;</span><span class="rec g">.94</span></span></div>
+      <div class="fam"><span class="dot" style="background:#b3006b"></span><span class="famname">GPT-5.6-luna</span><span class="nums">.93<span class="arrow2">&rarr;</span><span class="drop">.38</span><span class="arrow2">&rarr;</span><span class="rec r">.35</span></span></div>
+      <div class="fam"><span class="dot" style="background:#c0641a"></span><span class="famname">Qwen2.5-7B</span><span class="nums">.87<span class="arrow2">&rarr;</span><span class="drop">.22</span><span class="arrow2">&rarr;</span><span class="rec r">.26</span></span></div>
+      <div class="legendline">a 28-token machine-readable diff, 13.7% the size of the schema</div>
+      <div class="ledger" style="border-top:1.5px dashed #e7e2d5">The diff outperforms full-schema re-injection on Gemini (.98 vs .84 recovery) &mdash; and does <b style="color:#b3006b">nothing, or worse,</b> on the other two families.</div>
+    </div>
+  </div>
+  <div class="foot">The scariest cell is silent: under a tolerant executor, <b>67&ndash;100%</b> of rename and type drifted calls are accepted with wrong semantics &mdash; hand-audited examples include a $2,500 invoice sent as $250,000 and a 2-day access grant executed as 4 months.</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+*.aux
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+video/renders/
+video/cache/
+*.log

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SchemaDrift-120 · Experiment Plan (frozen 2026-09-09)</title>
+<style>
+  :root { --slate:#155e8c; --hot:#b3006b; --shelf:#c0641a; --good:#1c7a55; --ink:#1a1a1a; --mut:#666; }
+  body { font-family: Helvetica, Arial, sans-serif; color: var(--ink); background:#fff;
+         max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; line-height: 1.55; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: 12px; color: var(--hot); font-weight: 700; }
+  h1 { font-size: 30px; margin: 6px 0 4px; line-height: 1.2; }
+  .sub { color: var(--mut); margin-bottom: 28px; }
+  h2 { font-size: 19px; color: var(--slate); margin-top: 36px; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; }
+  th { text-align: left; border-bottom: 2px solid var(--ink); padding: 6px 8px; }
+  td { border-bottom: 1px solid #e5e5e5; padding: 6px 8px; vertical-align: top; }
+  code { font-family: "SF Mono", Menlo, monospace; font-size: 13px; background:#f5f5f5; padding: 1px 4px; border-radius: 3px; }
+  .pill { display:inline-block; font-size:12px; font-weight:700; padding:2px 10px; border-radius:12px; color:#fff; }
+  .frozen { background: var(--good); }
+  .warn { background: var(--shelf); }
+  .card { border:1px solid #e2e2e2; border-radius:8px; padding:16px 18px; margin:12px 0; }
+  .headline { color: var(--hot); font-weight: 700; }
+  ul { padding-left: 22px; }
+  .mono { font-family:"SF Mono",Menlo,monospace; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="eyebrow">Vizuara Research · Experiment plan · frozen at CP2</div>
+<h1>The Tool Changed and Nobody Told the Agent</h1>
+<div class="sub">Silent failure and diff-conditioned recovery under tool-schema drift · SchemaDrift-120
+· <span class="pill frozen">FROZEN 2026-09-09</span></div>
+
+<div class="card">
+<b>Headline questions (post-CP1 reframing).</b>
+<span class="headline">Q1:</span> when a drifted call fails, how often does it fail <i>silently</i> —
+and how often is it <b>accepted with wrong semantics</b>? (per drift class)
+<span class="headline">Q2:</span> does a structured machine-readable <b>schema diff</b> in context recover the
+lost success, and at what token cost vs re-injecting the full new schema or retrying on the raw error?
+<br><span style="color:var(--mut)">The deterministic minimal-pair drift taxonomy is the instrument; degradation-under-drift
+alone is already established (MCPEvol-Bench 2607.14642, ToolBench-X 2606.25819) and is not claimed.</span>
+</div>
+
+<h2>Testbed</h2>
+<ul>
+<li><b>30 tools</b> · 10 domains × 3 (calendar, payments, filesystem, CRM, messaging, search, e-commerce, travel, HR, analytics); JSON-Schema function declarations; every tool carries an enum param, an optional-with-default param, an integer param, a renameable string param.</li>
+<li><b>120 tasks</b> (4/tool): 90 single-step, 30 two-step; ground-truth calls checkable programmatically (canonicalized exact match + semantic checkers); <b>two phrasings per task</b>; frozen and git-hashed before any drift or any model call.</li>
+</ul>
+
+<h2>Five deterministic drift classes (minimal pairs: one transform per drifted schema)</h2>
+<table>
+<tr><th>Class</th><th>Transform</th><th>Example</th></tr>
+<tr><td class="mono">RENAME</td><td>param renamed via synonym table</td><td><code>query → search_term</code></td></tr>
+<tr><td class="mono">ENUM-TIGHTEN</td><td>ground-truth enum value removed/renamed</td><td><code>"normal" ∉ {"low","standard","high"}</code></td></tr>
+<tr><td class="mono">REQUIRED</td><td>optional-with-default → required</td><td><code>calendar_id</code> loses its default</td></tr>
+<tr><td class="mono">TYPE-CHANGE</td><td>int → string with format change</td><td><code>amount_cents:1250 → amount:"12.50"</code></td></tr>
+<tr><td class="mono">DEFAULT-CHANGE</td><td>documented default silently changes</td><td><code>currency USD → EUR</code></td></tr>
+</table>
+<p>240 task-drift pairs (48/class); primary set = 120 (24/class) runs on every family.</p>
+
+<h2>Conditions</h2>
+<table>
+<tr><th>Cond</th><th>Agent sees</th><th>Executor</th><th>Role</th></tr>
+<tr><td><b>A</b></td><td>v1 schema</td><td>v1</td><td>baseline</td></tr>
+<tr><td><b>B</b></td><td>v1 (believes v1)</td><td>v2 · strict <i>and</i> lenient</td><td>silent drift — core</td></tr>
+<tr><td><b>C</b></td><td>v1 + <b>structured JSON diff</b></td><td>v2 strict</td><td>the cheap lever</td></tr>
+<tr><td><b>D</b></td><td>v2 full schema</td><td>v2 strict</td><td>upper bound + token comparator</td></tr>
+<tr><td><b>E</b></td><td>v1; raw error string, one retry</td><td>v2 strict</td><td>practitioner default</td></tr>
+</table>
+<p><b>Outcome ledger per drifted call:</b> <code>ACCEPTED_CORRECT</code> · <code>ERROR_SURFACED</code> ·
+<span class="headline"><code>ACCEPTED_WRONG</code></span> (no error, wrong semantics — the scary cell; n≥20 hand-audited).</p>
+
+<h2>Models</h2>
+<table>
+<tr><th>Family</th><th>Route</th><th>Grid</th></tr>
+<tr><td>Gemini 3.6 Flash</td><td>native API, temp 0, thinking MINIMAL</td><td>full (doubled set, both profiles, noise floor, phrasing battery)</td></tr>
+<tr><td>Gemini 3.1 Pro</td><td>native API, temp 0, thinking LOW</td><td>primary set</td></tr>
+<tr><td>GPT family</td><td>OpenRouter mini-tier <span class="pill warn">$0.83 key headroom</span></td><td>primary set</td></tr>
+<tr><td>Qwen2.5-7B-Instruct</td><td>vLLM · Modal A10G · greedy</td><td>full</td></tr>
+</table>
+
+<h2>Analysis</h2>
+<ul>
+<li>Paired per-task differences; bootstrap 95% CIs (10k); sign-flip permutation (20k); paired d<sub>z</sub>.</li>
+<li>Recovery fraction (X−B)/(A−B) for X ∈ {diff, full schema, retry}; token cost per condition.</li>
+<li>Drift-class × condition <b>interaction tested directly</b>; Benjamini–Hochberg over the full family; noise-floor battery (30×5 identical calls); every number traces to <code>results/analysis.json</code>.</li>
+</ul>
+
+<h2>Pre-registered directions (dated 2026-09-09, before any data)</h2>
+<ol>
+<li>Newly-required arguments → largest silent-failure rate; renames most recoverable.</li>
+<li>Diff-conditioning recovers &gt;50% of dropped success at &lt;10% of the token cost of full-schema re-injection.</li>
+<li>Failure rates differ by model family at matched difficulty.</li>
+<li>A nontrivial fraction of drifted calls succeed with wrong semantics.</li>
+</ol>
+
+<h2>Budget</h2>
+<table>
+<tr><th>Item</th><th>Est.</th></tr>
+<tr><td>Gemini 3.6 Flash (~1,800 calls)</td><td>~$2.6</td></tr>
+<tr><td>Gemini 3.1 Pro (~850 calls)</td><td>~$9.2</td></tr>
+<tr><td>OpenRouter GPT-mini (~850 calls)</td><td>~$0.8</td></tr>
+<tr><td>Modal A10G Qwen (~2 GPU-h)</td><td>~$2.8</td></tr>
+<tr><td>Slack</td><td>~$2.0</td></tr>
+<tr><td><b>Total (cap $30 · hard stop $25 armed)</b></td><td><b>~$17.4</b></td></tr>
+</table>
+</body>
+</html>

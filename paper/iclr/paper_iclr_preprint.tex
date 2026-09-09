@@ -1,0 +1,39 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage[colorlinks=true, linkcolor={blue!55!black}, citecolor={blue!55!black}, urlcolor={blue!55!black}]{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf}
+\definecolor{slate}{HTML}{155E8C}
+\definecolor{shelf}{HTML}{C0641A}
+\definecolor{good}{HTML}{1C7A55}
+\definecolor{hot}{HTML}{B3006B}
+
+% NAMED PREPRINT / SITE BUILD. This is NOT the ICLR submission file (see
+% paper_iclr_submission.tex for that, which must stay anonymous). We define
+% \iclrfinalcopy purely to unlock the style file's real-\author rendering
+% path, then immediately override the header below so this PDF never claims
+% to be an accepted or published ICLR paper before it actually is one.
+\iclrfinalcopy
+
+\title{The Schema Changed and Nobody Told the Agent:\\ Silent Failure and Diff-Conditioned Recovery\\ under Tool-Schema Drift}
+
+\author{Mohammed Abraar \\ Vizuara Research \\ \texttt{abraar@vizz.vizuara.ai}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\lhead{Preprint. Under review; not yet accepted or published at ICLR 2026.}
+
+\input{paper_body.tex}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\input{paper_appendix.tex}
+
+\end{document}
