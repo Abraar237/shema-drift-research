@@ -130,7 +130,7 @@ def gif1():
         if appear > 0:
             d.text((W // 2, 782), "55 to 87 points gone, every family, p < 5e-5",
                    font=f_label, fill=tuple(int(i + (h - i) * appear) for i, h in zip(BG, HOT)), anchor="mm")
-        footer(d, "schemadrift-120 · 4,800 episodes · vizuara research")
+        footer(d, "schemadrift-120 · 4,800 episodes")
         frames.append(im)
     save(frames, "the-drop.gif")
 

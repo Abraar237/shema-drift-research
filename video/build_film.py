@@ -48,7 +48,7 @@ def base(d, t):
     d.rectangle([0, 0, W, H], fill=BG)
     d.rectangle([28, 28, W - 28, H - 28], outline=RULE, width=3)
     d.text((70, 62), "S C H E M A D R I F T - 1 2 0", font=f_eyebrow, fill=FAINT)
-    d.text((W - 70, 62), "V I Z U A R A   R E S E A R C H", font=f_eyebrow, fill=FAINT, anchor="ra")
+    d.text((W - 70, 62), "R E S E A R C H   F I L M", font=f_eyebrow, fill=FAINT, anchor="ra")
     # continuous motion: slow dot caravan along the bottom rule
     for k in range(7):
         x = 70 + ((t * 42 + k * 260) % (W - 140))
@@ -270,7 +270,7 @@ def s9(d, t):  # takeaway
             d.text((300, y), txt, font=f_lab, fill=mix(BG, INK, g), anchor="lm")
     g4 = seg(t, T["end"] - 1.5, T["end"] - 0.5)
     if g4 > 0:
-        d.text((W // 2, 950), "paper, code, and data: github.com/Abraar237/shema-drift-research",
+        d.text((W // 2, 950), "paper, code, and data: see the project repository",
                font=f_note, fill=mix(BG, MUTED, g4), anchor="mm")
 
 

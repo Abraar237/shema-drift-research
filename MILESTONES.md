@@ -1,6 +1,6 @@
 # Schema-Drift Audit · Milestones & Checkpoints
 
-Project brief: MISSION.md. Budget cap: **$30 total** (hard stop $25). Update this file at
+Budget cap: **$30 total** (hard stop $25). Update this file at
 every checkpoint. RULE: at each CP, STOP and report to the user; wait for approval.
 
 ## Pre-registered directions (recorded BEFORE any testbed generation or data collection)
@@ -28,7 +28,7 @@ every checkpoint. RULE: at each CP, STOP and report to the user; wait for approv
       "First drift benchmark" framing is dead (MCPEvol-Bench, ToolBench-X own it).
 - [ ] **REPORTED TO USER, APPROVAL RECEIVED: ____**
 
-Key sanity checks (2026-09-08): Gemini key OK; Modal profile thesreedath OK;
+Key sanity checks (2026-09-08): Gemini key OK; Modal profile OK;
 OpenRouter key has ~$0.83 remaining of its $5 cap (4.17 used) — GPT arm must be scoped
 tightly or key topped up before CP3.
 
@@ -82,9 +82,9 @@ tokens, not <10%); D3 strongly confirmed; D4 confirmed (audited).
 - [ ] **DELIVERED TO USER, APPROVAL RECEIVED: ____**
 
 ## CP5 · Publish — DONE 2026-09-09, awaiting approval
-- [x] Public repo github.com/Abraar237/shema-drift-research (.env verified absent from
+- [x] Public repo (public repository) (.env verified absent from
       index at every commit; repo was private, flipped public for Pages)
-- [x] Pages site https://abraar237.github.io/shema-drift-research/ rebuilt in the
+- [x] Pages site rebuilt in the
       script-bias aesthetic (Georgia serif, numbered narrative sections, TOC, stat
       cards, GIF figure cards); both paper PDFs served from the site
 - [x] Film: 3:25, 1080p60, Matilda narration phrase-anchored via ElevenLabs timestamps,
@@ -95,8 +95,14 @@ tokens, not <10%); D3 strongly confirmed; D4 confirmed (audited).
       the-drop, the-call-that-never-errors, the-28-token-fix; embedded in the site
 - [ ] **LINKS DELIVERED, APPROVAL RECEIVED: ____**
 
-## CP6 · Self-review — PENDING
-- [ ] a-star-reviewer scores + calibrated P(accept) + effort-ranked fix list reported
+## CP6 · Self-review — DONE 2026-09-22
+- [x] a-star-reviewer scores + calibrated P(accept) + effort-ranked fix list reported
+      -> REVIEW.md: R1 rigor 6, R2 novelty 5, R3 clarity/impact 6; avg 5.67; ICLR band
+      5.5-6.0 = 48.5% historical accept. Top issues: diff-ignoring families unexplained
+      (no placement/format/instruction ablation), diff-vs-full-schema confounded by
+      information content, part of the silent-failure headline is by construction
+- [x] Student handoff written -> HANDOFF.md (roadmap in 4 phases), README.md rewritten with
+      setup + paper build, requirements.txt, .env.example
 
 ## Spend log
 | Date | Item | Amount | Running total |

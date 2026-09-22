@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Schema Changed and Nobody Told the Agent · Vizuara Research</title>
+<title>The Schema Changed and Nobody Told the Agent</title>
 <meta name="description" content="Silent failure and diff-conditioned recovery under tool-schema drift. SchemaDrift-120: 4,800 episodes, four model families.">
 <style>
   :root { --slate:#155e8c; --hot:#b3006b; --shelf:#c0641a; --good:#1c7a55;
@@ -68,15 +68,13 @@
 <body>
 <div class="wrap">
 
-<div class="eyebrow">Vizuara Research · SchemaDrift-120 · September 2026</div>
+<div class="eyebrow">SchemaDrift-120 · September 2026</div>
 <h1>The schema changed and nobody told the agent</h1>
 <div class="subtitle">Tool schemas version: fields get renamed, enums tighten, defaults flip. We measured what breaks when the agent still believes the old schema, how much breaks <b>silently</b>, and what a <span class="num">28</span>-token diff repairs.</div>
-<div class="byline">Mohammed Abraar · Vizuara Research · abraar@vizz.vizuara.ai</div>
+<div class="byline">SchemaDrift-120 · 4,800 episodes · four model families</div>
 <div class="pills">
-  <a class="solid" href="paper_iclr_preprint.pdf">Paper (PDF)</a>
-  <a href="https://github.com/Abraar237/shema-drift-research">Code + data</a>
+  <a class="solid" href="paper_iclr_submission.pdf">Paper (PDF)</a>
   <a href="#film">Film</a>
-  <a href="paper_iclr_submission.pdf">Anonymous build</a>
 </div>
 
 <div class="stats">
@@ -164,17 +162,8 @@
 <h2 id="practice">8. What practitioners should do</h2>
 <p><b>Ship a machine-readable diff with every version bump.</b> For families that apply it, drift becomes nearly free to fix, at a seventh of the token cost of re-serving schemas. <b>Monitor the calls that succeed, not only the ones that error.</b> Default-change drift produces no error under any validator; error-rate dashboards will report a healthy system while payments go out in the wrong currency. <b>Test whether your model reads diffs before you count on it</b>, and know its argument style: a defensive filler is immune to two drift classes and fully exposed to the other three.</p>
 
-<h2 id="cite">Cite</h2>
-<div class="cite">@article{abraar2026schemadrift,
-  title={The Schema Changed and Nobody Told the Agent: Silent Failure and
-         Diff-Conditioned Recovery under Tool-Schema Drift},
-  author={Mohammed Abraar},
-  year={2026},
-  note={Preprint. Code and data: github.com/Abraar237/shema-drift-research}
-}</div>
-
 <footer>
-Every number on this page traces to <a href="https://github.com/Abraar237/shema-drift-research/blob/main/results/analysis.json">results/analysis.json</a>, produced by one scripted analysis over the raw episode logs. Total marginal compute: under 8 US dollars of metered API spend plus 1.7 GPU hours. · <a href="https://abraar237.github.io/script-bias-llm-judges/">script-bias study</a> · <a href="https://abraar237.github.io/speaker-identity-bias/">voice-judge study</a> · Vizuara Research, 2026.
+Every number on this page traces to <code>results/analysis.json</code> in the project repository, produced by one scripted analysis over the raw episode logs. Total marginal compute: under 8 US dollars of metered API spend plus 1.7 GPU hours. · 2026.
 </footer>
 </div>
 </body>
