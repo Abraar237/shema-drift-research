@@ -17,6 +17,9 @@ Agent Skills/
 reference/
 # personal / identifying files kept local only
 MISSION.md
-docs/paper_iclr_preprint.pdf
-paper/iclr/paper_iclr_preprint.pdf
+# paper materials live outside this repository
+paper/
+docs/*.pdf
+REVIEW.md
 .pytest_cache/
+figures/out/

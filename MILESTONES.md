@@ -95,14 +95,12 @@ tokens, not <10%); D3 strongly confirmed; D4 confirmed (audited).
       the-drop, the-call-that-never-errors, the-28-token-fix; embedded in the site
 - [ ] **LINKS DELIVERED, APPROVAL RECEIVED: ____**
 
-## CP6 · Self-review — DONE 2026-09-22
-- [x] a-star-reviewer scores + calibrated P(accept) + effort-ranked fix list reported
-      -> REVIEW.md: R1 rigor 6, R2 novelty 5, R3 clarity/impact 6; avg 5.67; ICLR band
-      5.5-6.0 = 48.5% historical accept. Top issues: diff-ignoring families unexplained
-      (no placement/format/instruction ablation), diff-vs-full-schema confounded by
-      information content, part of the silent-failure headline is by construction
-- [x] Student handoff written -> HANDOFF.md (roadmap in 4 phases), README.md rewritten with
-      setup + paper build, requirements.txt, .env.example
+## CP6 · Self-review + handoff — DONE 2026-09-23
+- [x] Simulated A* review done (kept with the paper materials, outside this repo)
+- [x] Paper source and PDFs moved out of this repository; the repo now carries the
+      testbed, logs, analysis, figures, website and film
+- [x] HANDOFF.md (reproduce first, then roadmap), README.md (setup + reproduction),
+      requirements.txt, .env.example
 
 ## Spend log
 | Date | Item | Amount | Running total |

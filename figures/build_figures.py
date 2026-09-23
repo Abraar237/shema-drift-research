@@ -14,7 +14,8 @@ sys.path.insert(0, str(HERE))
 import style as S  # noqa: E402
 
 A = json.loads((HERE.parent / "results" / "analysis.json").read_text())
-ASSETS = HERE.parent / "paper" / "iclr" / "assets"
+ASSETS = HERE / "out"
+ASSETS.mkdir(exist_ok=True)
 ASSETS.mkdir(parents=True, exist_ok=True)
 
 MODELS = ["gemini-3.6-flash", "gemini-3.1-pro-preview", "openai/gpt-5.6-luna", "modal-qwen2.5-7b"]

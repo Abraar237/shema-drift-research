@@ -73,8 +73,7 @@
 <div class="subtitle">Tool schemas version: fields get renamed, enums tighten, defaults flip. We measured what breaks when the agent still believes the old schema, how much breaks <b>silently</b>, and what a <span class="num">28</span>-token diff repairs.</div>
 <div class="byline">SchemaDrift-120 · 4,800 episodes · four model families</div>
 <div class="pills">
-  <a class="solid" href="paper_iclr_submission.pdf">Paper (PDF)</a>
-  <a href="#film">Film</a>
+  <a class="solid" href="#film">Film</a>
 </div>
 
 <div class="stats">
@@ -157,7 +156,7 @@
 
 <h2 id="known">7. What was known, what is new</h2>
 <p>The premise that agents degrade under tool evolution is not ours; we build on it and cite it. MCPEvol-Bench showed twelve models degrading under LLM-simulated, backward-compatible MCP evolution. ToolBench-X injected specification drift among five hazards and recovered with prose hints after failure. SilentProbe measured silent failure on live production APIs. Diff-conditioning was known to help LLMs migrate code.</p>
-<p>New here: the deterministic minimal-pair drift taxonomy with per-class attribution; the error-surfaced versus accepted-wrong ledger conditional on a known induced drift class and executor policy; the controlled diff versus full-schema versus retry comparison for tool-calling agents; and the calling-style exposure axis. The paper carries the full delineation table and 41 verified references.</p>
+<p>New here: the deterministic minimal-pair drift taxonomy with per-class attribution; the error-surfaced versus accepted-wrong ledger conditional on a known induced drift class and executor policy; the controlled diff versus full-schema versus retry comparison for tool-calling agents; and the calling-style exposure axis.</p>
 
 <h2 id="practice">8. What practitioners should do</h2>
 <p><b>Ship a machine-readable diff with every version bump.</b> For families that apply it, drift becomes nearly free to fix, at a seventh of the token cost of re-serving schemas. <b>Monitor the calls that succeed, not only the ones that error.</b> Default-change drift produces no error under any validator; error-rate dashboards will report a healthy system while payments go out in the wrong currency. <b>Test whether your model reads diffs before you count on it</b>, and know its argument style: a defensive filler is immune to two drift classes and fully exposed to the other three.</p>
